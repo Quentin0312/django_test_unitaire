@@ -1,8 +1,12 @@
 from django.db import models
 
-# Create your models here.git
-
 
 class Person(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+
+
+class Games(models.Model):
+    name = models.CharField(max_length=30)
+    description = models.CharField(max_length=500)
+    price = models.FloatField()
