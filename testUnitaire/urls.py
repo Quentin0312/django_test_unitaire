@@ -9,7 +9,7 @@ from rest_framework import routers, serializers, viewsets
 class GamesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Games
-        fields = ["name", "description", "price"]
+        fields = "__all__"
 
 
 # ViewSets
