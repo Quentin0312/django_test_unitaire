@@ -32,10 +32,7 @@ class TestDb(TestCase):
             "price": lastGame.price,
         }
 
-    # ----------------------------------------------------------------------------------
-
-    # GET
-    def test_api_client_get(self):
+    def setUp(self):
         # Insert in db
         Games.objects.create(name="orange", description="mandarine", price=2)
 
@@ -45,6 +42,10 @@ class TestDb(TestCase):
             {"name": "orange", "description": "mandarine", "price": 2},
         )
 
+    # ----------------------------------------------------------------------------------
+
+    # GET
+    def test_api_client_get(self):
         """API Client test GET"""
         response = self.client.get("/games/")
 
@@ -74,6 +75,7 @@ class TestDb(TestCase):
                 "description": "diamant",
                 "price": 2500,
             },
+            content_type="application/json",
         )
         # Status code
         self.assertEquals(response.status_code, 201)
@@ -93,3 +95,36 @@ class TestDb(TestCase):
         self.assertEqual(self.getLastGame().name, "rubix cube")
         self.assertEqual(self.getLastGame().description, "diamant")
         self.assertEqual(self.getLastGame().price, 2500)
+
+    # PUT
+    def test_api_client_put(self):
+        response = self.client.put(
+            f"/games/{self.getLastGame().id}/",
+            {
+                "name": "nouveau jouet",
+                "description": "interdit",
+                "price": 100,
+            },
+            content_type="application/json",
+        )
+
+        # Status code
+        self.assertEquals(response.status_code, 200)
+
+        # Response content
+        self.assertEquals(
+            json.loads(response.content),
+            {
+                "id": self.getLastGame().id,  # TODO:
+                "name": "nouveau jouet",
+                "description": "interdit",
+                "price": 100,
+            },
+        )
+
+        # Db content
+        self.assertEqual(self.getLastGame().name, "nouveau jouet")
+        self.assertEqual(self.getLastGame().description, "interdit")
+        self.assertEqual(self.getLastGame().price, 100)
+
+    # DELETE
