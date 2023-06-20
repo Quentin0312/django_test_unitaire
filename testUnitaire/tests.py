@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from testUnitaire.models import Games
 
@@ -27,10 +28,38 @@ class TestDb(TestCase):
 
     # API Client
     def test_api_client(self):
-        """API Client test"""
+        """API Client test GET"""
         response = self.client.get("/games/")
         # TODO: compare json not strings
         self.assertEqual(
-            response.content,
-            b'[{"name":"yoyo","description":"1,50m, or plaqu\xc3\xa9","price":50.0}]',
+            json.loads(response.content),
+            [
+                {
+                    "id": 1,
+                    "name": "yoyo",
+                    "description": "1,50m, or plaqué",
+                    "price": 50.0,
+                }
+            ],
+        )
+
+    def test_api_client_post(self):
+        """API Client test POST"""
+        response = self.client.post(
+            "/games/",
+            {
+                "name": "rubix cube",
+                "description": "diamant",
+                "price": 2500,
+            },
+        )
+
+        self.assertEqual(
+            json.loads(response.content),
+            {
+                "id": 2,
+                "name": "rubix cube",
+                "description": "diamant",
+                "price": 2500,
+            },
         )
