@@ -45,7 +45,7 @@ class TestDb(TestCase):
     # ----------------------------------------------------------------------------------
 
     # GET
-    def test_api_client_get(self):
+    def test_api_get(self):
         """API Client test GET"""
         response = self.client.get("/games/")
 
@@ -66,7 +66,7 @@ class TestDb(TestCase):
         )
 
     # POST
-    def test_api_client_post(self):
+    def test_api_post(self):
         """API Client test POST"""
         response = self.client.post(
             "/games/",
@@ -97,7 +97,7 @@ class TestDb(TestCase):
         self.assertEqual(self.getLastGame().price, 2500)
 
     # PUT
-    def test_api_client_put(self):
+    def test_api_put(self):
         response = self.client.put(
             f"/games/{self.getLastGame().id}/",
             {
@@ -128,3 +128,13 @@ class TestDb(TestCase):
         self.assertEqual(self.getLastGame().price, 100)
 
     # DELETE
+
+    def test_api_delete(self):
+        print("Games.objects.all()", Games.objects.all())
+        response = self.client.delete(f"/games/{self.getLastGame().id}/")
+
+        # Status code
+        self.assertEqual(response.status_code, 204)
+
+        # Db content
+        self.assertEqual(Games.objects.count(), 0)
