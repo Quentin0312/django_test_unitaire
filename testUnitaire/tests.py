@@ -18,13 +18,18 @@ from testUnitaire.models import Games
 
 
 class TestDb(TestCase):
+    def getLastGame(self):
+        return Games.objects.last()
+
     def setUp(self):
         Games.objects.create(name="yoyo", description="1,50m, or plaqué", price=50)
 
     def test_add_item(self):
         """Test database is working"""
-        game_added = Games.objects.get(name="yoyo")
-        self.assertEqual(game_added.price, 50)
+
+        self.assertEqual(self.getLastGame().name, "yoyo")
+        self.assertEqual(self.getLastGame().description, "1,50m, or plaqué")
+        self.assertEqual(self.getLastGame().price, 50)
 
     # API Client
     def test_api_client(self):
@@ -36,7 +41,7 @@ class TestDb(TestCase):
             json.loads(response.content),
             [
                 {
-                    "id": Games.objects.last().id,
+                    "id": self.getLastGame().id,
                     "name": "yoyo",
                     "description": "1,50m, or plaqué",
                     "price": 50.0,
@@ -61,12 +66,12 @@ class TestDb(TestCase):
         self.assertEqual(
             json.loads(response.content),
             {
-                "id": Games.objects.last().id,
+                "id": self.getLastGame().id,
                 "name": "rubix cube",
                 "description": "diamant",
                 "price": 2500,
             },
         )
-        self.assertEqual(Games.objects.last().name, "rubix cube")
-        self.assertEqual(Games.objects.last().description, "diamant")
-        self.assertEqual(Games.objects.last().price, 2500)
+        self.assertEqual(self.getLastGame().name, "rubix cube")
+        self.assertEqual(self.getLastGame().description, "diamant")
+        self.assertEqual(self.getLastGame().price, 2500)
