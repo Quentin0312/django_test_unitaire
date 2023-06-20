@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# TODO: check if container already launched
+script_directory=$(dirname $(readlink -f $0))
+cd $script_directory
+
+usage() {
+    echo ""
+    echo "Usage:
+    ./start
+    ./start --docker"
+    exit 1
+}
+
+# Sanity check
+if [ $# -gt 1 ] || [[ $# -eq 1 && "$1" != "--docker" ]]; then
+    usage
+fi
+
+if [ "$1" = "--docker" ]; then
+    echo ""
+    echo "*********  Django launching script with docker  *********"
+    docker run -p 8000:8000 django_ludo
+elif [ $# -eq 0 ]; then
+    echo ""
+    echo "*********  Django launching script without docker  *********"
+    python ./manage.py runserver
+fi

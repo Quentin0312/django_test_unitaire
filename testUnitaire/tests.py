@@ -1,22 +1,19 @@
 from django.test import TestCase
-from testUnitaire.models import Person, Games
+from testUnitaire.models import Games
 
+# Possibiltés de tests: (pros and cons ?)
+# - APIRequestFactory
+# - APIClient
+# - RequestsClient
+# - CoreAPIClient
+# - API Test cases
+# - URLPatternsTestCase
+# https://www.django-rest-framework.org/api-guide/testing/
 
-# class SimpleCalcul(TestCase):
-#     def test_addition_simple(self):
-#         """Simple addition"""
-#         self.assertEqual(1 + 1, 2)
-#         self.assertEqual(2 + 2, 22)
+# plans de tests à mettre en place
 
-
-class SimpleTestDB(TestCase):
-    def setUp(self):
-        Person.objects.create(first_name="jean", last_name="wick")
-
-    def test_database(self):
-        """Simple test database"""
-        cereal_killeur = Person.objects.get(first_name="jean")
-        self.assertEqual(cereal_killeur.last_name, "wick")
+# reste à lire:
+# https://openclassrooms.com/fr/courses/7155841-testez-votre-projet-python
 
 
 class TestDb(TestCase):
@@ -24,6 +21,16 @@ class TestDb(TestCase):
         Games.objects.create(name="yoyo", description="1,50m, or plaqué", price=50)
 
     def test_add_item(self):
-        """Test database working"""
+        """Test database is working"""
         game_added = Games.objects.get(name="yoyo")
         self.assertEqual(game_added.price, 50)
+
+    # API Client
+    def test_api_client(self):
+        """API Client test"""
+        response = self.client.get("/games/")
+        # TODO: compare json not strings
+        self.assertEqual(
+            response.content,
+            b'[{"name":"yoyo","description":"1,50m, or plaqu\xc3\xa9","price":50.0}]',
+        )
