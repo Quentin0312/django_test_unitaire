@@ -1,3 +1,22 @@
+# Lancer le projet en local
+
+```sh
+./start
+```
+
+OU
+
+```sh
+python ./manage.py runserver
+```
+
+# Lancer le docker
+
+```sh
+docker build -t django_ludo .
+./start --docker
+```
+
 # Lancer les test
 
 ```sh
@@ -6,8 +25,6 @@
 
 # Lancer uniquement un test
 
-ex:
-
 ```sh
-./manage.py test testUnitaire.tests.TestDb.test_api_delete
+./manage.py test testUnitaire.tests.TestDb.{nom_de_la_fonction}
 ```
