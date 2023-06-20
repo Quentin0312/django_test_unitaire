@@ -23,12 +23,14 @@ class TestDb(TestCase):
     def getLastGame(self):
         return Games.objects.last()
 
-    # TODO: rename
+    # TODO: rename & refactor
     def checkLastGame(self):
-        name = self.getLastGame().name
-        description = self.getLastGame().description
-        price = self.getLastGame().price
-        return {"name": name, "description": description, "price": price}
+        lastGame = self.getLastGame()
+        return {
+            "name": lastGame.name,
+            "description": lastGame.description,
+            "price": lastGame.price,
+        }
 
     # ----------------------------------------------------------------------------------
 
