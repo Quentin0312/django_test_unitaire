@@ -29,6 +29,7 @@ class TestDb(TestCase):
     def test_api_client(self):
         """API Client test"""
         response = self.client.get("/games/")
+        # TODO: compare json not strings
         self.assertEqual(
             response.content,
             b'[{"name":"yoyo","description":"1,50m, or plaqu\xc3\xa9","price":50.0}]',
