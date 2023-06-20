@@ -31,11 +31,12 @@ class TestDb(TestCase):
         """API Client test GET"""
         response = self.client.get("/games/")
         # TODO: compare json not strings
+        self.assertEquals(response.status_code, 200)
         self.assertEqual(
             json.loads(response.content),
             [
                 {
-                    "id": 1,
+                    "id": Games.objects.last().id,
                     "name": "yoyo",
                     "description": "1,50m, or plaqué",
                     "price": 50.0,
@@ -53,13 +54,19 @@ class TestDb(TestCase):
                 "price": 2500,
             },
         )
+        # Status code
+        self.assertEquals(response.status_code, 201)
 
+        # Content
         self.assertEqual(
             json.loads(response.content),
             {
-                "id": 2,
+                "id": Games.objects.last().id,
                 "name": "rubix cube",
                 "description": "diamant",
                 "price": 2500,
             },
         )
+        self.assertEqual(Games.objects.last().name, "rubix cube")
+        self.assertEqual(Games.objects.last().description, "diamant")
+        self.assertEqual(Games.objects.last().price, 2500)
