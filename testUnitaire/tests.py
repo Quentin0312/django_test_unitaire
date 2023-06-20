@@ -2,51 +2,31 @@ import json
 from django.test import TestCase
 from testUnitaire.models import Games
 
-# Possibiltés de tests: (pros and cons ?)
-# - APIRequestFactory
-# - APIClient
-# - RequestsClient
-# - CoreAPIClient
-# - API Test cases
-# - URLPatternsTestCase
 # https://www.django-rest-framework.org/api-guide/testing/
-
-# plans de tests à mettre en place
-
-# reste à lire:
 # https://openclassrooms.com/fr/courses/7155841-testez-votre-projet-python
-
-# TODO: mettre en place newName, ...
 
 
 class TestDb(TestCase):
-    def getLastGame(self):
+    def getLastGameItem(self):
         return Games.objects.last()
 
-    # TODO: rename & refactor
-    def checkLastGame(self):
-        lastGame = self.getLastGame()
-        return {
-            "name": lastGame.name,
-            "description": lastGame.description,
-            "price": lastGame.price,
-        }
+    def assertWithLastGameItem(self, name, description, price):
+        self.assertEqual(self.getLastGameItem().name, name)
+        self.assertEqual(self.getLastGameItem().description, description)
+        self.assertEqual(self.getLastGameItem().price, price)
 
     def setUp(self):
         # Insert in db
         Games.objects.create(name="orange", description="mandarine", price=2)
 
-        # Test Db is working
-        self.assertEqual(
-            self.checkLastGame(),
-            {"name": "orange", "description": "mandarine", "price": 2},
-        )
+        # Test if Db is working
+        self.assertWithLastGameItem("orange", "mandarine", 2)
 
     # ----------------------------------------------------------------------------------
 
     # GET
     def test_api_get(self):
-        """API Client test GET"""
+        """API test GET"""
         response = self.client.get("/games/")
 
         # Status
@@ -55,25 +35,22 @@ class TestDb(TestCase):
         # Response content
         self.assertEqual(
             json.loads(response.content),
-            [
-                {
-                    "id": self.getLastGame().id,
-                    "name": self.checkLastGame()["name"],
-                    "description": self.checkLastGame()["description"],
-                    "price": self.checkLastGame()["price"],
-                }
-            ],
+            [Games.objects.values().last()],
         )
 
     # POST
     def test_api_post(self):
-        """API Client test POST"""
+        new_name = "rubix cube"
+        new_description = "diamant"
+        new_price = 2500
+
+        """API test POST"""
         response = self.client.post(
             "/games/",
             {
-                "name": "rubix cube",
-                "description": "diamant",
-                "price": 2500,
+                "name": new_name,
+                "description": new_description,
+                "price": new_price,
             },
             content_type="application/json",
         )
@@ -81,29 +58,24 @@ class TestDb(TestCase):
         self.assertEquals(response.status_code, 201)
 
         # Response content
-        self.assertEqual(
-            json.loads(response.content),
-            {
-                "id": self.getLastGame().id,  # TODO:
-                "name": "rubix cube",
-                "description": "diamant",
-                "price": 2500,
-            },
-        )
+        self.assertEqual(json.loads(response.content), Games.objects.values().last())
 
         # Db content
-        self.assertEqual(self.getLastGame().name, "rubix cube")
-        self.assertEqual(self.getLastGame().description, "diamant")
-        self.assertEqual(self.getLastGame().price, 2500)
+        self.assertWithLastGameItem(new_name, new_description, new_price)
 
     # PUT
     def test_api_put(self):
+        new_name = "nouveau jouet"
+        new_description = "interdit"
+        new_price = 100
+
+        """API test PUT"""
         response = self.client.put(
-            f"/games/{self.getLastGame().id}/",
+            f"/games/{self.getLastGameItem().id}/",
             {
-                "name": "nouveau jouet",
-                "description": "interdit",
-                "price": 100,
+                "name": new_name,
+                "description": new_description,
+                "price": new_price,
             },
             content_type="application/json",
         )
@@ -112,26 +84,14 @@ class TestDb(TestCase):
         self.assertEquals(response.status_code, 200)
 
         # Response content
-        self.assertEquals(
-            json.loads(response.content),
-            {
-                "id": self.getLastGame().id,  # TODO:
-                "name": "nouveau jouet",
-                "description": "interdit",
-                "price": 100,
-            },
-        )
+        self.assertEquals(json.loads(response.content), Games.objects.values().last())
 
         # Db content
-        self.assertEqual(self.getLastGame().name, "nouveau jouet")
-        self.assertEqual(self.getLastGame().description, "interdit")
-        self.assertEqual(self.getLastGame().price, 100)
+        self.assertWithLastGameItem(new_name, new_description, new_price)
 
     # DELETE
-
     def test_api_delete(self):
-        print("Games.objects.all()", Games.objects.all())
-        response = self.client.delete(f"/games/{self.getLastGame().id}/")
+        response = self.client.delete(f"/games/{self.getLastGameItem().id}/")
 
         # Status code
         self.assertEqual(response.status_code, 204)
