@@ -16,33 +16,36 @@ from testUnitaire.models import Games
 # reste à lire:
 # https://openclassrooms.com/fr/courses/7155841-testez-votre-projet-python
 
+# TODO: mettre en place newName, ...
+
 
 class TestDb(TestCase):
     def getLastGame(self):
         return Games.objects.last()
 
+    # TODO: rename
     def checkLastGame(self):
         name = self.getLastGame().name
         description = self.getLastGame().description
         price = self.getLastGame().price
         return {"name": name, "description": description, "price": price}
 
-    def setUp(self):
-        Games.objects.create(name="yoyo", description="1,50m, or plaqué", price=50)
-
-    def test_add_item(self):
-        """Test database is working"""
-        self.assertEqual(
-            self.checkLastGame(),
-            {"name": "yoyo", "description": "1,50m, or plaqué", "price": 50},
-        )
-
     # ----------------------------------------------------------------------------------
 
-    # API Client
+    # GET
     def test_api_client_get(self):
+        # Insert in db
+        Games.objects.create(name="orange", description="mandarine", price=2)
+
+        # Test Db is working
+        self.assertEqual(
+            self.checkLastGame(),
+            {"name": "orange", "description": "mandarine", "price": 2},
+        )
+
         """API Client test GET"""
         response = self.client.get("/games/")
+
         # Status
         self.assertEquals(response.status_code, 200)
 
@@ -52,15 +55,14 @@ class TestDb(TestCase):
             [
                 {
                     "id": self.getLastGame().id,
-                    "name": "yoyo",
-                    "description": "1,50m, or plaqué",
-                    "price": 50.0,
+                    "name": self.checkLastGame()["name"],
+                    "description": self.checkLastGame()["description"],
+                    "price": self.checkLastGame()["price"],
                 }
             ],
         )
 
-        # Db content
-
+    # POST
     def test_api_client_post(self):
         """API Client test POST"""
         response = self.client.post(
@@ -78,7 +80,7 @@ class TestDb(TestCase):
         self.assertEqual(
             json.loads(response.content),
             {
-                "id": self.getLastGame().id,
+                "id": self.getLastGame().id,  # TODO:
                 "name": "rubix cube",
                 "description": "diamant",
                 "price": 2500,
