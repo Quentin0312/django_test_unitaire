@@ -26,6 +26,7 @@ SECRET_KEY = "django-insecure-#znxa55gw$st93p)b9#&9k5!hnkr&$le!!g=ct0a-v1*sj7yux
 DEBUG = True
 
 ALLOWED_HOSTS = ["0.0.0.0", "0.0.0.0:8000", "127.0.0.1"]
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "testUnitaire",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "src.urls"
